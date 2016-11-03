@@ -1,3 +1,5 @@
+# demonstration of how to query a whoosh index & see results
+
 import whoosh.index as index
 from whoosh.qparser import QueryParser
 
@@ -12,11 +14,11 @@ def query_index(index, query, query_limit):
     with index.searcher() as searcher:
         query = query_parser.parse(unicode(query))
         results = searcher.search(query, limit=query_limit)
-        show_results(results)
+        process_results(results)
     return
 
 
-def show_results(results):
+def process_results(results):
     for result in results:
         print result
 

@@ -1,3 +1,4 @@
+# builds an index using whoosh of all of the abstracts. Does no processing of abstracts right now.
 import os
 import pdb
 from whoosh.index import create_in
