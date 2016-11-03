@@ -19,8 +19,12 @@ def query_index(index, query, query_limit):
 
 
 def process_results(results):
-    for result in results:
-        print result
+    for ind, result in enumerate(results):
+        with open(result['file_path'], 'rb') as f:
+            print 'Result no. ' + str(ind)
+            print result
+            # little hack to get rid of all the trailing XML
+            print f.read().split('</p>')[0] + '\n'
 
 
 if __name__ == '__main__':
