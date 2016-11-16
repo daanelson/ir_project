@@ -1,4 +1,4 @@
-# demonstration of how to query a whoosh index & see results
+# demonstration of how to query a whoosh index & see results - note that BM25F is default similarity metric.
 
 import whoosh.index as index
 from whoosh.qparser import QueryParser
@@ -14,11 +14,13 @@ def query_index(index, query, query_limit):
     with index.searcher() as searcher:
         query = query_parser.parse(unicode(query))
         results = searcher.search(query, limit=query_limit)
+        print 'hi'
         process_results(results)
     return
 
 
 def process_results(results):
+    print results
     for ind, result in enumerate(results):
         with open(result['file_path'], 'rb') as f:
             print 'Result no. ' + str(ind)

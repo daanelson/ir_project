@@ -1,4 +1,4 @@
-# builds an index using whoosh of all of the abstracts. Does no processing of abstracts right now.
+# builds an index with all files in index directory. Does no processing of abstracts right now.
 import os
 import pdb
 from whoosh.index import create_in
@@ -8,15 +8,21 @@ from whoosh.fields import Schema, TEXT, ID
 def make_index(index_path, file_path):
     check_dirs(index_path, file_path)
 
-    #
     schema = Schema(file_path=TEXT(stored=True), fileid=ID(stored=True), abstract=TEXT)
     ix = create_in(index_path, schema)
     writer = ix.writer()
 
-    for file in os.listdir(file_path):
-        index_document(writer, os.path.join(file_path, file))
+    rec_index(writer, file_path)
 
     writer.commit()
+
+
+def rec_index(writer, file_path):
+    for file in os.listdir(file_path):
+        if os.path.isdir(os.path.join(file_path, file)):
+            rec_index(writer, os.path.join(file_path, file))
+        else:
+            index_document(writer, os.path.join(file_path, file))
 
 
 def index_document(writer, file):
