@@ -4,12 +4,12 @@ import queryingtools
 
 def run(query_limit):
 
-    index = queryingtools.load_index('index')
+    index = queryingtools.load_index('index','full_text')
 
     xml_file = 'data/topics/topicsA.xml'
     topics = load_data(xml_file)
 
-    results = [queryingtools.query_index(index, topic, query_limit) for topic in topics]
+    results = [queryingtools.query_index(index, topic, query_limit) for topic in topics[:2]]
     print 'resulted'
 
 
@@ -27,5 +27,5 @@ def load_data(xml_file):
     return final_topics
 
 if __name__ == '__main__':
-    QUERY_RESULT_LIMIT = 1000
+    QUERY_RESULT_LIMIT = 10
     run(QUERY_RESULT_LIMIT)
