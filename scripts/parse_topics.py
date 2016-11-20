@@ -6,7 +6,7 @@ tree = ET.parse(topic_path)
 root = tree.getroot()
 descriptions = []
 for topic in root:
-	# 0 for description, 1 for summary
+    # 0 for description, 1 for summary
     descriptions.append(topic[1].text)
 
 for i, d in enumerate(descriptions):
