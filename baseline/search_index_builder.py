@@ -1,5 +1,6 @@
 # builds an index with all files in index directory. Does no processing of abstracts right now.
 import os
+import sys
 from bs4 import BeautifulSoup
 import pdb
 from whoosh.index import create_in, open_dir
@@ -9,7 +10,7 @@ from whoosh.fields import Schema, TEXT, ID
 def make_index(index_path, file_path, name):
     check_dirs(index_path, file_path)
 
-    schema = Schema(file_path=TEXT(stored=True), fileid=ID(stored=True), abstract=TEXT, body=TEXT)
+    schema = Schema(file_path=TEXT(stored=True), fileid=ID(stored=True, unique=True), abstract=TEXT, body=TEXT)
     ix = open_dir(index_path, indexname=name, schema=schema)
     writer = ix.writer()
 
@@ -54,6 +55,7 @@ def check_dirs(index_path, file_path):
 
 
 if __name__ == '__main__':
-    for file in os.listdir('data/pmc-text-00'):
+    dir = sys.argv[1]
+    for file in os.listdir(dir):
         if '.' not in file:
-            make_index('index', os.path.join('data/pmc-text-00',file), 'full_text')
+            make_index('index', os.path.join(dir, file), 'full_text')
