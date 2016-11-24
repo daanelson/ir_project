@@ -67,5 +67,6 @@ if __name__ == '__main__':
     dir = sys.argv[1]
     index_path = '/scratch/cluster/dnelson/ir_proj/bm25_index'
     for file in os.listdir(dir):
-        if '.' not in file:
+        sys.stderr.write(file)
+	if '.' not in file:
             make_index(index_path, os.path.join(dir, file), 'full_text')
