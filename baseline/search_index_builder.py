@@ -9,10 +9,12 @@ from whoosh.fields import Schema, TEXT, ID
 
 
 def make_index(index_path, file_path, name):
-    check_dirs(index_path, file_path)
 
     schema = Schema(file_path=TEXT(stored=True), fileid=ID(stored=True, unique=True), abstract=TEXT, body=TEXT)
-    ix = create_in(index_path, indexname=name, schema=schema)
+    if index_exists_already(index_path, file_path):
+        ix = open_dir(index_path, indexname=name, schema=schema)
+    else:
+        ix = create_in(index_path, indexname=name, schema=schema)
     writer = ix.writer()
     print 'index opened'
     rec_index(writer, file_path)
@@ -51,14 +53,19 @@ def index_document(writer, file):
         writer.add_document(file_path=file_name, fileid=file_id, abstract=abstract, body=file_body)
 
 
-def check_dirs(index_path, file_path):
+def index_exists_already(index_path, file_path):
     if not os.path.isdir(index_path):
         os.makedirs(index_path)
+        return False
+    elif os.listdir(index_path) == []:
+        return False
+    else:
+        return True
 
 
 if __name__ == '__main__':
     dir = sys.argv[1]
     index_path = '/scratch/cluster/dnelson/ir_proj/bm25_index'
-    for file in os.listdir(dir)[:2]:
+    for file in os.listdir(dir):
         if '.' not in file:
             make_index(index_path, os.path.join(dir, file), 'full_text')
