@@ -1,3 +1,4 @@
+#!/lusr/bin/
 # builds an index with all files in index directory. Does no processing of abstracts right now.
 import os
 import sys
@@ -11,9 +12,9 @@ def make_index(index_path, file_path, name):
     check_dirs(index_path, file_path)
 
     schema = Schema(file_path=TEXT(stored=True), fileid=ID(stored=True, unique=True), abstract=TEXT, body=TEXT)
-    ix = open_dir(index_path, indexname=name, schema=schema)
+    ix = create_in(index_path, indexname=name, schema=schema)
     writer = ix.writer()
-
+    print 'index opened'
     rec_index(writer, file_path)
 
     writer.commit()
@@ -30,6 +31,7 @@ def rec_index(writer, file_path):
 
 
 def index_document(writer, file):
+    print 'indexing: ', file
     with open(file, 'rb') as f:
         raw_text = f.read()
         soup = BeautifulSoup(raw_text, 'lxml-xml')
@@ -57,6 +59,6 @@ def check_dirs(index_path, file_path):
 if __name__ == '__main__':
     dir = sys.argv[1]
     index_path = '/scratch/cluster/dnelson/ir_proj/bm25_index'
-    for file in os.listdir(dir):
+    for file in os.listdir(dir)[:2]:
         if '.' not in file:
             make_index(index_path, os.path.join(dir, file), 'full_text')
