@@ -33,5 +33,5 @@ def _process_results(results):
 
 if __name__ == '__main__':
     QUERY_RESULT_LIMIT = 10
-    ix = load_index('index','full_text')
+    ix = load_index('/scratch/cluster/dnelson/ir_proj/bm25_index', 'full_text')
     query_index(ix, 'heart', QUERY_RESULT_LIMIT)
