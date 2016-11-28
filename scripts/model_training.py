@@ -9,15 +9,16 @@ import pickle
 # Placeholder data parsing
 def get_data(training_year=2014):
     # Proposed format: [doc_id topic_id h0 h1 h2 h3 ...]
-    with open('histograms', 'r') as f:
+    with open('histograms_%d' % training_year, 'r') as f:
         histograms = pickle.load(f)
 
     # can set this to 2015 to read in annotations for 2015 instead
     # format: label_dict[doc_id][topic_id] = ground truth
     label_dict = make_test_data.make_truth(training_year)
 
-    X_train = [np.array(hist) for hist in histograms.values()]
-    Y_train = np.array([label_dict[int(hist[0])][int(hist[1])] for hist in histograms.keys()])
+    X = [np.array(hist) for hist in histograms.values()]
+    Y = np.array([label_dict[int(hist[0])][int(hist[1])] for hist in histograms.keys()])
+    return X, Y
 
 
 def get_fake_data():
@@ -29,7 +30,7 @@ def get_fake_data():
     return X_train, Y_train
 
 
-# X_train, Y_train = get_data()
+# X_train, Y_train = get_data(training_year=2014)
 X_train, Y_train = get_fake_data()
 
 # Create model (input_shape is inferred after first layer)
@@ -48,6 +49,7 @@ model.compile(loss='mean_squared_error', optimizer='sgd')
 model.fit(X_train, Y_train, nb_epoch=5, batch_size=32)
 
 # Test model
+# X_test, Y_test = get_data(training_year=2015)
 X_test, _ = get_fake_data()
 pred_ranks = model.predict(X_test)
 
