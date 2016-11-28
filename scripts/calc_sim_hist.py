@@ -13,7 +13,7 @@ class read_from_file(object):
 
 
 # initalize dictionary variable
-cos_hist = {}
+cos_sim_matrix = {}
 saveFile = 'C:\\Users\\Wyss User\\Documents\\biomedRet\\cosine_dictionary.p'
 
 # read in word2vec model
@@ -83,15 +83,15 @@ for topic in allTopicFiles:
                             #print score
                             #if score > 0.8:
                             #   print("%s , %s , %f " % (abstractWord, topicWord, score))
-                            #cosSim.append(score)
+                            cosSim.append(score)
                 
                 print cosSim   
                 abstractID =  re.sub(r'.txt', '', fname)
                 topicID = re.sub(r'.txt', '', topic)
-                cos_hist[(abstractID, topicID)] = cosSim
+                cos_sim_matrix[(abstractID, topicID)] = cosSim
                 
 # save dictionary
-pickle.dump(cos_hist, open(saveFile, "wb"))
+pickle.dump(cos_sim_matrix, open(saveFile, "wb"))
 
 # load dictionary
-#cos_hist = pickle.load( open(saveFile, "rb" ))
+#cos_sim_matrix = pickle.load( open(saveFile, "rb" ))
