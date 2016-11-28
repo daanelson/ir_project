@@ -4,20 +4,20 @@ from keras.layers import Dense, Activation
 from keras.utils.np_utils import to_categorical
 import numpy as np
 import make_test_data
-
+import pickle
 
 # Placeholder data parsing
 def get_data(training_year=2014):
     # Proposed format: [doc_id topic_id h0 h1 h2 h3 ...]
     with open('histograms', 'r') as f:
-        histograms = [line.split() for line in f]
+        histograms = pickle.load(f)
 
     # can set this to 2015 to read in annotations for 2015 instead
     # format: label_dict[doc_id][topic_id] = ground truth
     label_dict = make_test_data.make_truth(training_year)
 
-    X_train = [np.array(hist[2:], int) for hist in histograms]
-    Y_train = np.array([label_dict[int(hist[0])][int(hist[1])] for hist in histograms])
+    X_train = [np.array(hist) for hist in histograms.values()]
+    Y_train = np.array([label_dict[int(hist[0])][int(hist[1])] for hist in histograms.keys()])
 
 
 def get_fake_data():
@@ -37,7 +37,7 @@ X_train, Y_train = get_fake_data()
 model = Sequential()
 model.add(Dense(output_dim=30, input_shape=(30,)))
 model.add(Activation('relu'))
-model.add(Dense(output_dim=30))
+model.add(Dense(output_dim=5))
 model.add(Activation('relu'))
 model.add(Dense(output_dim=1))
 
