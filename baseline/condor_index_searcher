@@ -1,0 +1,15 @@
+# condor submit script for running job to build BM25 index
+# Runs another script which basically just calls python
+
+Universe = vanilla
+Executable = search_index.sh
+Input = /dev/null
+Log = search_index.log
+Error = search_index.err
+Output = search_index.out
+
++Group = "GRAD"
++Project = "AI_ROBOTICS"
++ProjectDescription = "Researching deep learning for information retrieval"
+
+Queue
