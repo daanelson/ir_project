@@ -17,14 +17,14 @@ def query_index(index, query, query_limit):
     with index.searcher() as searcher:
         query = query_parser.parse(unicode(query))
         results = searcher.search(query, limit=query_limit)
-        list_of_ids = _process_results(results)
+        pdb.set_trace()
+	list_of_ids = _process_results(results)
     return list_of_ids
 
 
 def _process_results(results):
     print results
     for ind, result in enumerate(results):
-        pdb.set_trace()
         with open(result['file_path'], 'rb') as f:
             print 'Result no. ' + str(ind)
             print result
