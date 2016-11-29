@@ -22,15 +22,16 @@ def query_index(index, query, query_limit):
 
 
 def _process_results(results):
-    print results
-    for ind, result in enumerate(results):
-        pdb.set_trace()
-        with open(result['file_path'], 'rb') as f:
-            print 'Result no. ' + str(ind)
-            print result
-            # little hack to get rid of all the trailing XML
-            print f.read().split('</p>')[0] + '\n'
-    return [result['fileid'] for result in results]
+    max_relevance = results.top_n[0][0]
+
+    # for ind, result in enumerate(results):
+    #     with open(result['file_path'], 'rb') as f:
+            # print 'Result no. ' + str(ind)
+            # print result
+            # # little hack to get rid of all the trailing XML
+            # print f.read().split('</p>')[0] + '\n'
+
+    return zip([result['fileid'] for result in results], [val[0] / max_relevance for val in results.top_n])
 
 
 if __name__ == '__main__':
