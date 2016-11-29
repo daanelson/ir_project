@@ -9,6 +9,7 @@ def load_index(index_path, index_name=None):
     return index.open_dir(index_path, indexname=index_name)
 
 
+# returns [(id0,score0),(id1, score1), etc]
 def query_index(index, query, query_limit):
     # searching the "abstract" field now, can build indices with multiple fields if necessary
     DIFFERENT_TERM_BONUS = 0.9
@@ -34,8 +35,10 @@ def _process_results(results):
     return zip([result['fileid'] for result in results], [val[0] / max_relevance for val in results.top_n])
 
 
+
 if __name__ == '__main__':
     QUERY_RESULT_LIMIT = 10
     ix = load_index('/scratch/cluster/dnelson/ir_proj/bm25_index', 'full_text')
     ideez = query_index(ix, 'heart', QUERY_RESULT_LIMIT)
     pdb.set_trace()
+
