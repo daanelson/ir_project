@@ -83,6 +83,7 @@ besides
 between
 beyond
 biol
+bold
 both
 brief
 briefly
@@ -241,6 +242,8 @@ inward
 is
 isn't
 it
+italics
+italic
 itd
 it'll
 its
@@ -498,8 +501,7 @@ such
 sufficiently
 suggest
 sup
-sure	
-t
+sure	t
 take
 taken
 taking
