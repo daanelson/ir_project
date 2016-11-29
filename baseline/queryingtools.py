@@ -2,6 +2,7 @@
 
 import whoosh.index as index
 from whoosh.qparser import QueryParser, OrGroup
+import pdb
 
 
 def load_index(index_path, index_name=None):
@@ -16,22 +17,24 @@ def query_index(index, query, query_limit):
     with index.searcher() as searcher:
         query = query_parser.parse(unicode(query))
         results = searcher.search(query, limit=query_limit)
-        _process_results(results)
-        #todo: format results properly and return them
-    return
+        list_of_ids = _process_results(results)
+    return list_of_ids
 
 
 def _process_results(results):
     print results
     for ind, result in enumerate(results):
+        pdb.set_trace()
         with open(result['file_path'], 'rb') as f:
             print 'Result no. ' + str(ind)
             print result
             # little hack to get rid of all the trailing XML
             print f.read().split('</p>')[0] + '\n'
+    return [result['fileid'] for result in results]
 
 
 if __name__ == '__main__':
     QUERY_RESULT_LIMIT = 10
     ix = load_index('/scratch/cluster/dnelson/ir_proj/bm25_index', 'full_text')
-    query_index(ix, 'heart', QUERY_RESULT_LIMIT)
+    ideez = query_index(ix, 'heart', QUERY_RESULT_LIMIT)
+    pdb.set_trace()
