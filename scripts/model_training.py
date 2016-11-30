@@ -9,10 +9,13 @@ import make_test_data
 import pickle as pkl
 import os
 
+#TODO: fix root, remove key restrictions
+
 # Placeholder data parsing
 def get_data(training_year=2014):
     # Proposed format: [doc_id topic_id h0 h1 h2 h3 ...]
     data_root = '/scratch/cluster/dnelson/ir_proj'
+
     with open(os.path.join(data_root, 'histograms_%d' % training_year), 'r') as f:
         histograms = pkl.load(f)
 
@@ -66,15 +69,15 @@ pred_ranks = model.predict(X_test)
 ranks_and_keys = zip(test_keys, pred_ranks)
 result_dict = defaultdict(lambda: [])
 for val in ranks_and_keys:
-    result_dict[val[0][1]] = (val[1], val[0][0])
+    result_dict[val[0][1]].append((val[1][0], val[0][0]))
 
 with open('query_results','wb') as f:
-    for cur_topic in range(1, 31):
-        topic_results = result_dict[cur_topic]
+    for cur_topic in range(30):
+        topic_results = result_dict[str(cur_topic)]
         topic_results.sort(reverse=True)
 
         for result_rank, cur_result in enumerate(topic_results[:1000]):
-            line_to_write = [str(cur_topic), '0', str(cur_result[0]), str(result_rank), str(cur_result[1]), 'test_run', '\n']
+            line_to_write = [str(cur_topic + 1), '0', str(cur_result[1]), str(result_rank + 1), str(cur_result[0]), 'test_run', '\n']
             f.write(" ".join(line_to_write))
 
 
