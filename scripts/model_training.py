@@ -8,14 +8,15 @@ import numpy as np
 import make_test_data
 import pickle as pkl
 import os
+import pdb
 
 #TODO: fix root, remove key restrictions
 
 # Placeholder data parsing
 def get_data(training_year=2014, training=True):
     # Proposed format: [doc_id topic_id h0 h1 h2 h3 ...]
-    data_root = '/scratch/cluster/dnelson/ir_proj'
-    #data_root = '/Users/Dan/class/deep_ir/project/data'
+    #data_root = '/scratch/cluster/dnelson/ir_proj'
+    data_root = '/Users/Dan/class/deep_ir/project/data'
 
     with open(os.path.join(data_root, 'histograms_%d' % training_year), 'r') as f:
         histograms = pkl.load(f)
@@ -27,10 +28,10 @@ def get_data(training_year=2014, training=True):
     # enforcing order on a dictionary & downsampling to only data w/judgments for training
     key_array = histograms.keys()
     if training:
-        key_array = [val for val in key_array if label_dict[int(val[0])][int(val[1])] >= 0]
+        key_array = [val for val in key_array if label_dict[int(val[0])][int(val[1])+1] >= 0]
 
     X = np.array([histograms[key] for key in key_array])
-    Y = np.array([label_dict[int(key[0])][int(key[1])] for key in key_array])
+    Y = np.array([label_dict[int(key[0])][int(key[1])+1] for key in key_array])
     return X, Y, key_array
 
 
