@@ -31,9 +31,8 @@ def get_fake_data():
     return X_train, Y_train
 
 
-X_train, Y_train = get_data(training_year=2015)
+X_train, Y_train = get_data(training_year=2014)
 #X_train, Y_train = get_fake_data()
-print len(X_train)
 
 # Create model (input_shape is inferred after first layer)
 # This model is a regression
@@ -54,9 +53,9 @@ model.compile(loss='mean_squared_error', optimizer=sgd)
 model.fit(X_train, Y_train, nb_epoch=5, batch_size=128)
 
 # Test model
-# X_test, Y_test = get_data(training_year=2015)
-X_test, _ = get_fake_data()
+X_test, Y_test = get_data(training_year=2015)
 pred_ranks = model.predict(X_test)
+print pred_ranks
 
 
 
