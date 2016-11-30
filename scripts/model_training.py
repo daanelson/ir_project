@@ -3,23 +3,29 @@ from keras.models import Sequential
 from keras.layers import Dense, Activation, Dropout
 from keras.optimizers import SGD
 from keras.utils.np_utils import to_categorical
+from collections import defaultdict
 import numpy as np
 import make_test_data
 import pickle as pkl
+import os
 
 # Placeholder data parsing
 def get_data(training_year=2014):
     # Proposed format: [doc_id topic_id h0 h1 h2 h3 ...]
-    with open('histograms_%d' % training_year, 'r') as f:
+    data_root = '/scratch/cluster/dnelson/ir_proj'
+    with open(os.path.join(data_root, 'histograms_%d' % training_year), 'r') as f:
         histograms = pkl.load(f)
 
     # can set this to 2015 to read in annotations for 2015 instead
     # format: label_dict[doc_id][topic_id] = ground truth
     label_dict = make_test_data.make_truth(training_year)
 
-    X = np.array(histograms.values())
-    Y = np.array([label_dict[int(hist[0])][int(hist[1])] for hist in histograms.keys()])
-    return X, Y
+    # enforcing order on a dictionary
+    key_array = histograms.keys()
+
+    X = np.array([histograms[key] for key in key_array])
+    Y = np.array([label_dict[int(key[0])][int(key[1])] for key in key_array])
+    return X, Y, key_array
 
 
 def get_fake_data():
@@ -31,7 +37,7 @@ def get_fake_data():
     return X_train, Y_train
 
 
-X_train, Y_train = get_data(training_year=2014)
+X_train, Y_train, _ = get_data(training_year=2014)
 #X_train, Y_train = get_fake_data()
 
 # Create model (input_shape is inferred after first layer)
@@ -53,9 +59,23 @@ model.compile(loss='mean_squared_error', optimizer=sgd)
 model.fit(X_train, Y_train, nb_epoch=5, batch_size=128)
 
 # Test model
-X_test, Y_test = get_data(training_year=2015)
+X_test, Y_test, test_keys = get_data(training_year=2015)
 pred_ranks = model.predict(X_test)
-print pred_ranks
+
+#[0][0] = id, [0][1] = topic, [1] = rank
+ranks_and_keys = zip(test_keys, pred_ranks)
+result_dict = defaultdict(lambda: [])
+for val in ranks_and_keys:
+    result_dict[val[0][1]] = (val[1], val[0][0])
+
+with open('query_results','wb') as f:
+    for cur_topic in range(1, 31):
+        topic_results = result_dict[cur_topic]
+        topic_results.sort(reverse=True)
+
+        for result_rank, cur_result in enumerate(topic_results[:1000]):
+            line_to_write = [str(cur_topic), '0', str(cur_result[0]), str(result_rank), str(cur_result[1]), 'test_run', '\n']
+            f.write(" ".join(line_to_write))
 
 
 
