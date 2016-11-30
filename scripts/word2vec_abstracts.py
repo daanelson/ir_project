@@ -15,22 +15,24 @@ class read_from_file(object):
 allText = []
 
 # read in stopwords
-stoplist = set(line.strip() for line in open('C:\\Users\\Wyss User\\Documents\\biomedRet\\stopwords_list.txt'))   
+stoplist = set(line.strip() for line in open('/scratch/cluster/dnelson/ir_proj/stopwords_list.txt'))   
 
 rawFolders = ["abstract_00", "abstract_01","abstract_02", "abstract_03"]
+
+from glob import glob
 
 # look through each tar ball folder
 for abstractSet in rawFolders:
     
      # read in directory
-    dirName = 'C:\\Users\\Wyss User\\Documents\\biomedRet\\abstracts\\' + abstractSet
+    dirName = '/scratch/cluster/dnelson/ir_proj/abstracts/' + abstractSet
     allFolders = os.listdir(dirName) 
     print abstractSet
     
     # look through each collection
     for folderName in allFolders:
         # get all the files in one folder
-        allFiles = os.listdir(os.path.join(dirName,folderName))
+        allFiles = glob(os.path.join(dirName,folderName) + '*.txt')
         #print folderName
         
         for fname in allFiles:
@@ -44,4 +46,4 @@ for abstractSet in rawFolders:
             allText = allText + texts
 
 model = gensim.models.Word2Vec(allText, size=400, window=10, min_count=1)
-model.save_word2vec_format('C:\\Users\\Wyss User\\Documents\\biomedRet\\allAbstract_vectors.bin', binary=True)  # binary format
+model.save_word2vec_format('/scratch/cluster/dnelson/ir_proj/word_vectors.bin', binary=True)  # binary format
