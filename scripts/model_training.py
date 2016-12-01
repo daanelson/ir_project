@@ -9,6 +9,7 @@ import make_test_data
 import pickle as pkl
 import os
 import pdb
+import random
 
 #TODO: fix root, remove key restrictions
 
@@ -16,7 +17,7 @@ import pdb
 def get_data(training_year=2014, training=True):
     # Proposed format: [doc_id topic_id h0 h1 h2 h3 ...]
     #data_root = '/scratch/cluster/dnelson/ir_proj'
-    data_root = '/Users/Dan/class/deep_ir/project/data'
+    data_root = '/Users/quinnmac/Documents/GradIR/ir_project/scripts/'
 
     with open(os.path.join(data_root, 'histograms_%d' % training_year), 'r') as f:
         histograms = pkl.load(f)
@@ -29,6 +30,7 @@ def get_data(training_year=2014, training=True):
     key_array = histograms.keys()
     if training:
         key_array = [val for val in key_array if label_dict[int(val[0])][int(val[1])+1] >= 0]
+        #key_array = [val for val in key_array if label_dict[int(val[0])][int(val[1])+1] > 0 or random.random() < 0.05]
 
     X = np.array([histograms[key] for key in key_array])
     Y = np.array([label_dict[int(key[0])][int(key[1])+1] for key in key_array])
@@ -45,6 +47,10 @@ def get_fake_data():
 
 
 X_train, Y_train, _ = get_data(training_year=2014, training=True)
+X_train = np.ma.log(X_train)
+X_train = X_train.filled(0)
+from collections import Counter
+print Counter(Y_train)
 #X_train, Y_train = get_fake_data()
 
 # Create model (input_shape is inferred after first layer)
@@ -63,10 +69,12 @@ sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True, clipnorm=1.)
 model.compile(loss='mean_squared_error', optimizer=sgd)
 
 # Train model
-model.fit(X_train, Y_train, nb_epoch=5, batch_size=128)
+model.fit(X_train, Y_train, nb_epoch=30, batch_size=128)
 
 # Test model
 X_test, Y_test, test_keys = get_data(training_year=2015, training=False)
+X_test = np.ma.log(X_test)
+X_test = X_test.filled(0)
 pred_ranks = model.predict(X_test)
 
 #[0][0] = id, [0][1] = topic, [1] = rank
