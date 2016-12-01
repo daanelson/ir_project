@@ -9,7 +9,7 @@ import make_test_data
 import pickle as pkl
 import os
 import pdb
-from sklearn.linear_model import LogisticRegression
+from sklearn import linear_model
 
 #TODO: fix root, remove key restrictions
 
@@ -31,8 +31,9 @@ def get_data(training_year=2014, training=True):
     if training:
         key_array = [val for val in key_array if label_dict[int(val[0])][int(val[1])+1] >= 0]
 
+    #X = np.array([[np.log(hist_val) if hist_val > 0 else hist_val for hist_val in histograms[key]] for key in key_array])
     X = np.array([histograms[key] for key in key_array])
-    Y = np.array([label_dict[int(key[0])][int(key[1])+1] for key in key_array])
+    Y = np.array([int(label_dict[int(key[0])][int(key[1])+1] >0) for key in key_array])
     return X, Y, key_array
 
 
@@ -50,25 +51,13 @@ X_train, Y_train, _ = get_data(training_year=2014, training=True)
 
 # Create model (input_shape is inferred after first layer)
 # This model is a regression
-model = Sequential()
-model.add(Dense(output_dim=29, input_shape=(29,)))
-model.add(Activation('relu'))
-model.add(Dropout(0.1))
-model.add(Dense(output_dim=5))
-model.add(Activation('relu'))
-model.add(Dropout(0.1))
-model.add(Dense(output_dim=1))
-
-# Compile model
-sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True, clipnorm=1.)
-model.compile(loss='mean_squared_error', optimizer=sgd)
-
-# Train model
-model.fit(X_train, Y_train, nb_epoch=5, batch_size=128)
+clf = linear_model.LogisticRegression(penalty='l2')
+clf.fit(X_train, Y_train)
 
 # Test model
 X_test, Y_test, test_keys = get_data(training_year=2015, training=False)
-pred_ranks = model.predict(X_test)
+pred_ranks = clf.predict_proba(X_test)
+pdb.set_trace()
 
 #[0][0] = id, [0][1] = topic, [1] = rank
 ranks_and_keys = zip(test_keys, pred_ranks)
