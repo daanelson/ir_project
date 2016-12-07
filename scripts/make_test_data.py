@@ -62,9 +62,24 @@ def get_all_ids():
     return id_set
 
 
-#if __name__ == '__main__':
-    #truth = make_truth(year=2015)
-    #ids = get_all_ids()
+def get_topic_id_dict(year):
+    id_set = defaultdict(lambda: [])
+    files_delimiters = [get_file(year)]
+
+    for pair in files_delimiters:
+        with open(pair[0], 'rb') as f:
+            for line in f:
+                parsed_line = [int(val) for val in line.split(pair[1])]
+                id_set[parsed_line[0] - 1].append(parsed_line[2])
+
+    return id_set
+
+
+
+if __name__ == '__main__':
+    truth = make_truth(year=2015)
+    ids = get_topic_id_dict(2014)
+    pdb.set_trace()
 
 
 
