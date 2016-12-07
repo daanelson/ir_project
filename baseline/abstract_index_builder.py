@@ -34,6 +34,8 @@ def index_document(writer, abs_file):
     print 'indexing: ', abs_file
     with open(abs_file, 'rb') as f:
         abstract = f.read()
+        abstract = unicode(abstract, errors='ignore')
+        print abstract
 
         file_name = unicode(abs_file)
         file_id = file_name.split('/')[-1].split('.')[0]
